@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. S. Vishal &amp; Dr. M. Aswini | Wedding</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --gold: #b8973a;
+    --gold-light: #d4b86a;
+    --gold-pale: #f5ecd7;
+    --purple: #4a3680;
+    --purple-dark: #2e1f5e;
+    --cream: #fdfaf4;
+    --cream-dark: #f0e9d8;
+    --text-dark: #2c2416;
+    --text-mid: #5a4e3a;
+    --text-light: #8a7a60;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: "Montserrat", sans-serif; background: var(--cream); color: var(--text-dark); overflow-x: hidden; }
+
+  /* ============ ENVELOPE INTRO ============ */
+  #envelope-intro {
+    position: fixed; inset: 0; z-index: 9999;
+    background: linear-gradient(135deg, #1a0e2e 0%, #2e1f5e 40%, #4a3680 100%);
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+    overflow: hidden;
+  }
+  #envelope-intro.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  /* Floating particles in envelope screen */
+  .intro-particle {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(212,184,106,0.6), transparent);
+    animation: floatParticle linear infinite;
+  }
+  @keyframes floatParticle {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100vh) scale(1); opacity: 0; }
+  }
+
+  .envelope-wrapper {
+    position: relative; width: 320px; height: 220px;
+    perspective: 800px; cursor: pointer;
+    transition: transform 0.3s;
+  }
+  .envelope-wrapper:hover { transform: scale(1.05); }
+
+  .envelope-body {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #f5ecd7, #e8d5a8);
+    border-radius: 6px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    position: relative; overflow: hidden;
+  }
+  .envelope-body::before {
+    content: ""; position: absolute; bottom: 0; left: 0; right: 0; height: 50%;
+    background: linear-gradient(to top, rgba(184,151,58,0.15), transparent);
+  }
+
+  .envelope-flap {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 120px; transform-origin: top center;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2;
+  }
+  .envelope-flap svg { width: 100%; height: 100%; }
+
+  .envelope-wrapper.opened .envelope-flap {
+    transform: rotateX(180deg);
+  }
+
+  .envelope-seal {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 60px; height: 60px; border-radius: 50%;
+    background: radial-gradient(circle, #c9a040, #8b6914);
+    display: flex; align-items: center; justify-content: center;
+    font-family: "Great Vibes", cursive; font-size: 1.6rem; color: #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    z-index: 3; transition: opacity 0.4s, transform 0.4s;
+  }
+  .envelope-wrapper.opened .envelope-seal { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+
+  /* Card sliding out */
+  .envelope-card {
+    position: absolute; left: 10%; top: 15%; width: 80%; height: 80%;
+    background: #fff; border-radius: 4px; border: 2px solid var(--gold-light);
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+    text-align: center; padding: 1rem;
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+    z-index: 1;
+  }
+  .envelope-wrapper.opened .envelope-card {
+    transform: translateY(-140px);
+  }
+  .envelope-card-names {
+    font-family: "Great Vibes", cursive; font-size: 1.4rem; color: var(--purple);
+    line-height: 1.3;
+  }
+  .envelope-card-date {
+    font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-top: 0.4rem;
+  }
+
+  .envelope-prompt {
+    font-family: "Cormorant Garamond", serif; font-style: italic;
+    color: rgba(212,184,106,0.8); font-size: 1.1rem; margin-top: 2rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+  .enter-btn {
+    margin-top: 1.5rem; padding: 0.8rem 2.5rem;
+    background: transparent; border: 1px solid var(--gold-light);
+    color: var(--gold-light); font-size: 0.7rem; letter-spacing: 0.2em;
+    text-transform: uppercase; cursor: pointer; border-radius: 4px;
+    opacity: 0; transform: translateY(20px);
+    transition: all 0.5s ease 1.2s, background 0.3s, color 0.3s;
+  }
+  .envelope-wrapper.opened ~ .enter-btn { opacity: 1; transform: translateY(0); }
+  .enter-btn:hover { background: var(--gold-light); color: #1a0e2e; }
+
+  /* ============ NAV ============ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: #f7f2eb; backdrop-filter: none;
+    border-bottom: 1px solid transparent;
+    padding: 0.8rem 2.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: all 0.4s ease;
+  }
+  nav.scrolled {
+    background: rgba(253,250,244,0.96); backdrop-filter: blur(8px);
+    border-bottom-color: rgba(184,151,58,0.3);
+  }
+  nav .brand { font-family: "Great Vibes", cursive; font-size: 1.6rem; color: var(--purple); opacity: 1; transition: opacity 0.4s; }
+  nav.scrolled .brand { opacity: 1; color: var(--purple); }
+  nav ul { list-style: none; display: flex; gap: 2rem; }
+  nav ul a { text-decoration: none; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-mid); transition: color 0.3s; }
+  nav.scrolled ul a { color: var(--text-mid); }
+  nav ul a:hover { color: var(--gold); }
+  @media(max-width:600px){ nav ul { display: none; } }
+
+  /* ============ HERO ============ */
+  #hero {
+    min-height: 100vh;
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background: #f7f2eb;
+    padding-top: 76px;
+  }
+  .hero-invitation {
+    position: relative; z-index: 1;
+    display: block; width: 100%; height: calc(100vh - 76px);
+    object-fit: contain;
+  }
+
+  .hero-content {
+    position: relative; z-index: 2; text-align: center;
+    padding: 2rem;
+  }
+  .hero-tagline {
+    font-family: "Cormorant Garamond", serif; font-size: 1.1rem;
+    font-style: italic; color: rgba(212,184,106,0.8); letter-spacing: 0.1em;
+    opacity: 0; transform: translateY(30px);
+    animation: fadeInUp 1s ease 0.3s forwards;
+  }
+  .ornament { color: var(--gold-light); font-size: 1.2rem; margin: 0.8rem 0; letter-spacing: 0.3em;
+    opacity: 0; animation: fadeInUp 1s ease 0.5s forwards;
+  }
+  .hero-names {
+    font-family: "Great Vibes", cursive; font-size: clamp(2.8rem, 6vw, 5rem);
+    color: #fff; line-height: 1.2;
+    opacity: 0; animation: fadeInUp 1s ease 0.7s forwards;
+  }
+  .hero-amp {
+    font-family: "Cormorant Garamond", serif; font-size: clamp(2rem, 3.5vw, 3rem);
+    color: var(--gold-light); font-style: italic; display: block; margin: 0.1rem 0;
+  }
+  .divider { width: 100%; height: 1px; background: linear-gradient(to right, transparent, var(--gold-light), transparent); margin: 1.2rem auto; max-width: 300px; }
+  .hero-date {
+    font-size: 0.78rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(255,255,255,0.8); margin-top: 1.5rem;
+    opacity: 0; animation: fadeInUp 1s ease 0.9s forwards;
+  }
+  .hero-venue {
+    font-family: "Cormorant Garamond", serif; font-style: italic;
+    font-size: 1.15rem; color: rgba(212,184,106,0.7); margin-top: 0.4rem;
+    opacity: 0; animation: fadeInUp 1s ease 1.1s forwards;
+  }
+  .scroll-hint {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.5); font-size: 0.6rem; letter-spacing: 0.2em;
+    text-transform: uppercase; text-align: center;
+    animation: bounce 2s ease-in-out infinite;
+  }
+  .scroll-hint::after {
+    content: ""; display: block; width: 1px; height: 30px;
+    background: rgba(212,184,106,0.4); margin: 0.5rem auto 0;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  @keyframes fadeInUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============ FLOATING PETALS ============ */
+  #petals-canvas {
+    position: fixed; inset: 0; z-index: 50; pointer-events: none;
+  }
+
+  /* ============ SCROLL REVEAL ============ */
+  .reveal {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left {
+    opacity: 0; transform: translateX(-60px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+  .reveal-right {
+    opacity: 0; transform: translateX(60px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+  .reveal-scale {
+    opacity: 0; transform: scale(0.8);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+  /* ============ COUNTDOWN ============ */
+  #countdown {
+    background: var(--purple);
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    color: #fff; padding: 5rem 1.5rem;
+    position: relative; overflow: hidden;
+  }
+  .countdown-inner { max-width: 900px; margin: 0 auto; text-align: center; position: relative; z-index: 2; }
+  .cd-label { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(212,184,106,0.9); }
+  .cd-title { font-family: "Cormorant Garamond", serif; font-size: clamp(2rem,4vw,3rem); color: #fff; margin: 0.3rem 0 2.5rem; }
+  .countdown-grid { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; }
+  .countdown-card {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(212,184,106,0.35);
+    border-radius: 10px; padding: 1.5rem 2rem; min-width: 110px; text-align: center;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .countdown-card:hover { transform: translateY(-5px) scale(1.05); border-color: var(--gold-light); }
+  .countdown-num { font-family: "Cormorant Garamond", serif; font-size: 3.8rem; font-weight: 300; color: var(--gold-light); line-height: 1; }
+  .countdown-lbl { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-top: 0.4rem; }
+
+  /* Number flip animation */
+  .countdown-num { transition: transform 0.3s ease; }
+  .countdown-num.flip { animation: flipNum 0.6s ease; }
+  @keyframes flipNum {
+    0% { transform: rotateX(0); }
+    50% { transform: rotateX(90deg); }
+    100% { transform: rotateX(0); }
+  }
+
+  /* ============ SECTION ============ */
+  .section { padding: 5.5rem 1.5rem; max-width: 920px; margin: 0 auto; }
+  .section-label { font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); text-align: center; }
+  .section-title { font-family: "Cormorant Garamond", serif; font-size: clamp(2rem,4vw,2.8rem); font-weight: 400; color: var(--purple); text-align: center; margin-top: 0.3rem; }
+  .ornament-center { text-align: center; color: var(--gold); font-size: 1.1rem; margin: 0.7rem 0 1.5rem; letter-spacing: 0.3em; }
+
+  /* ============ INVITATION CARD (interactive flip) ============ */
+  #invitation {
+    padding: 5.5rem 1.5rem;
+    background: linear-gradient(135deg, var(--cream-dark), var(--cream));
+    position: relative;
+  }
+  .invitation-inner { max-width: 500px; margin: 0 auto; perspective: 1200px; }
+  .invitation-flip-card {
+    width: 100%; aspect-ratio: 1240/1750; position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+  .invitation-flip-card.flipped { transform: rotateY(180deg); }
+  .invitation-front, .invitation-back {
+    position: absolute; inset: 0; backface-visibility: hidden;
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+  }
+  .invitation-front {
+    background: linear-gradient(135deg, #2e1f5e, #4a3680);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 2rem; border: 2px solid var(--gold-light);
+  }
+  .invitation-front-motif {
+    width: 80px; height: 80px; border: 2px solid var(--gold-light);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; margin-bottom: 1.5rem;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0%,100% { box-shadow: 0 0 20px rgba(212,184,106,0.3); }
+    50% { box-shadow: 0 0 40px rgba(212,184,106,0.6); }
+  }
+  .invitation-front h3 {
+    font-family: "Great Vibes", cursive; font-size: 2rem; color: var(--gold-light);
+  }
+  .invitation-front p {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(255,255,255,0.5); margin-top: 1rem;
+  }
+  .invitation-back {
+    background: #fff; transform: rotateY(180deg);
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+    border: 2px solid var(--gold-light);
+  }
+  .invitation-back img { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .invitation-back .inv-label {
+    font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold);
+  }
+  .invitation-back .inv-names {
+    font-family: "Great Vibes", cursive; font-size: clamp(1.8rem,4vw,2.5rem);
+    color: var(--purple); margin: 0.5rem 0; line-height: 1.3;
+  }
+  .invitation-back .inv-amp {
+    font-family: "Cormorant Garamond", serif; font-size: 1.5rem;
+    color: var(--gold-light); font-style: italic;
+  }
+  .invitation-back .inv-details {
+    margin-top: 1rem; font-size: 0.75rem; color: var(--text-mid); line-height: 2;
+  }
+  .invitation-back .inv-venue {
+    font-family: "Cormorant Garamond", serif; font-style: italic;
+    font-size: 1.1rem; color: var(--text-light); margin-top: 0.5rem;
+  }
+  .inv-ornament { color: var(--gold); letter-spacing: 0.3em; margin: 0.6rem 0; }
+  .flip-hint {
+    text-align: center; margin-top: 1rem;
+    font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-light);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* ============ BG PATTERN ============ */
+  .bg-pattern {
+    background-color: var(--cream-dark);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(184,151,58,0.15) 1px, transparent 0);
+    background-size: 28px 28px;
+  }
+
+  /* ============ EVENTS ============ */
+  .events-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+  .event-card {
+    border: 1px solid var(--gold-light); border-radius: 10px;
+    padding: 2.2rem 1.8rem; text-align: center; background: #fff;
+    position: relative; overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s;
+  }
+  .event-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(184,151,58,0.15); }
+  .event-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(to right, var(--gold-light), var(--gold), var(--gold-light)); transform: scaleX(0); transition: transform 0.5s; }
+  .event-card:hover::before { transform: scaleX(1); }
+  .event-icon { font-size: 2.2rem; margin-bottom: 0.8rem; transition: transform 0.4s; }
+  .event-card:hover .event-icon { transform: scale(1.2) rotate(10deg); }
+  .event-name { font-family: "Cormorant Garamond", serif; font-size: 1.9rem; font-style: italic; color: var(--purple); margin-bottom: 0.8rem; }
+  .event-date { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-mid); }
+  .event-time { font-family: "Cormorant Garamond", serif; font-size: 1.15rem; color: var(--gold); margin-top: 0.4rem; }
+
+  /* ============ GALLERY ============ */
+  .gallery-grid {
+    columns: 3 220px; gap: 0.8rem; margin-top: 2rem;
+  }
+  .gallery-item {
+    break-inside: avoid; margin-bottom: 0.8rem;
+    border-radius: 8px; overflow: hidden;
+    border: 1px solid rgba(184,151,58,0.2);
+    position: relative; cursor: pointer;
+  }
+  .gallery-item img {
+    width: 100%; display: block;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s;
+  }
+  .gallery-item::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(74,54,128,0.4), transparent 50%);
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .gallery-item:hover::after { opacity: 1; }
+  .gallery-item:hover img { transform: scale(1.08); }
+
+  /* ============ LIGHTBOX ============ */
+  #lightbox {
+    display: none; position: fixed; inset: 0; z-index: 999;
+    background: rgba(20,10,30,0.95);
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(10px);
+  }
+  #lightbox.open { display: flex; }
+  #lightbox img {
+    max-width: 90vw; max-height: 85vh; border-radius: 8px;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+    animation: lbIn 0.4s ease;
+  }
+  @keyframes lbIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+  #lightbox-close {
+    position: absolute; top: 1.5rem; right: 2rem;
+    font-size: 2rem; color: var(--gold-light); cursor: pointer;
+    background: none; border: none; font-family: inherit;
+    transition: transform 0.3s;
+  }
+  #lightbox-close:hover { transform: rotate(90deg); }
+  #lightbox-prev, #lightbox-next {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(184,151,58,0.15); border: 1px solid rgba(212,184,106,0.4);
+    color: var(--gold-light); font-size: 1.5rem; padding: 0.8rem 1.2rem;
+    cursor: pointer; border-radius: 50%;
+    transition: background 0.3s, transform 0.3s;
+  }
+  #lightbox-prev:hover, #lightbox-next:hover { background: rgba(184,151,58,0.3); }
+  #lightbox-prev { left: 1.5rem; }
+  #lightbox-prev:hover { transform: translateY(-50%) translateX(-3px); }
+  #lightbox-next { right: 1.5rem; }
+  #lightbox-next:hover { transform: translateY(-50%) translateX(3px); }
+  .lightbox-counter {
+    position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.5); font-size: 0.7rem; letter-spacing: 0.15em;
+  }
+
+  /* ============ VENUE ============ */
+  .venue-section { background: var(--cream-dark); padding: 5.5rem 1.5rem; }
+  .venue-inner { max-width: 920px; margin: 0 auto; }
+  .venue-card {
+    background: #fff; border: 1px solid var(--gold-light);
+    border-radius: 14px; padding: 3rem; margin-top: 2rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;
+    transition: box-shadow 0.4s;
+  }
+  .venue-card:hover { box-shadow: 0 15px 50px rgba(184,151,58,0.12); }
+  @media(max-width:640px){ .venue-card { grid-template-columns: 1fr; gap: 1.5rem; } }
+  .venue-name { font-family: "Cormorant Garamond", serif; font-size: 2.2rem; color: var(--purple); }
+  .venue-address { color: var(--text-light); font-size: 0.88rem; line-height: 1.9; margin-top: 0.8rem; }
+  .map-btn {
+    display: inline-block; margin-top: 1.5rem;
+    padding: 0.75rem 2rem; border: 1px solid var(--gold);
+    border-radius: 4px; text-decoration: none;
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); transition: all 0.25s;
+    position: relative; overflow: hidden;
+  }
+  .map-btn::before {
+    content: ""; position: absolute; inset: 0;
+    background: var(--gold); transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+  .map-btn:hover::before { transform: translateX(0); }
+  .map-btn:hover { color: #fff; }
+  .map-btn span { position: relative; z-index: 1; }
+  .venue-map-box {
+    background: var(--cream-dark); border-radius: 10px;
+    border: 1px solid var(--gold-light); overflow: hidden;
+    height: 260px;
+  }
+  .venue-map-box iframe { width: 100%; height: 100%; border: none; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    background: var(--text-dark); color: rgba(245,236,215,0.7);
+    text-align: center; padding: 4rem 2rem;
+    position: relative; overflow: hidden;
+  }
+  footer::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: linear-gradient(to right, transparent, var(--gold-light), var(--gold), var(--gold-light), transparent);
+  }
+  .footer-names { font-family: "Great Vibes", cursive; font-size: 2.5rem; color: var(--gold-light); margin-bottom: 0.5rem; }
+  footer p { font-size: 0.78rem; margin-top: 0.4rem; letter-spacing: 0.08em; }
+  .pets { font-family: "Cormorant Garamond", serif; font-style: italic; color: var(--gold-light); font-size: 1.05rem; margin-top: 1rem; }
+
+  /* ============ MUSIC TOGGLE ============ */
+  #music-toggle {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+    width: 48px; height: 48px; border-radius: 50%;
+    background: rgba(74,54,128,0.9); border: 1px solid var(--gold-light);
+    color: var(--gold-light); font-size: 1.2rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+    transition: transform 0.3s, background 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  #music-toggle:hover { transform: scale(1.1); background: var(--purple); }
+  #music-toggle .bars {
+    display: flex; align-items: flex-end; gap: 2px; height: 20px;
+  }
+  #music-toggle .bar {
+    width: 3px; background: var(--gold-light); border-radius: 2px;
+    animation: none;
+  }
+  #music-toggle.playing .bar { animation: musicBar 0.8s ease-in-out infinite alternate; }
+  #music-toggle .bar:nth-child(1) { height: 8px; animation-delay: 0s; }
+  #music-toggle .bar:nth-child(2) { height: 14px; animation-delay: 0.15s; }
+  #music-toggle .bar:nth-child(3) { height: 10px; animation-delay: 0.3s; }
+  #music-toggle .bar:nth-child(4) { height: 16px; animation-delay: 0.45s; }
+  @keyframes musicBar {
+    0% { height: 4px; }
+    100% { height: 18px; }
+  }
+
+  /* ============ BACK TO TOP ============ */
+  #back-to-top {
+    position: fixed; bottom: 2rem; left: 2rem; z-index: 200;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: rgba(253,250,244,0.9); border: 1px solid var(--gold-light);
+    color: var(--gold); font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transform: translateY(20px);
+    transition: all 0.4s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  #back-to-top.visible { opacity: 1; transform: translateY(0); }
+  #back-to-top:hover { background: var(--gold); color: #fff; }
+
+  /* ============ RESPONSIVE ============ */
+  @media(max-width:768px){
+    .hero-names { font-size: clamp(2.2rem, 8vw, 3.5rem); }
+    .invitation-inner { max-width: 90vw; }
+    .envelope-wrapper { width: 280px; height: 190px; }
+    .gallery-grid { columns: 2 160px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- FLOATING PETALS -->
+<canvas id="petals-canvas"></canvas>
+
+<!-- ENVELOPE INTRO -->
+<div id="envelope-intro">
+  <div class="envelope-wrapper" id="envelope">
+    <div class="envelope-body">
+      <div class="envelope-card">
+        <div class="envelope-card-names">Dr. S. Vishal<br>&amp;<br>Dr. M. Aswini</div>
+        <div class="envelope-card-date">19 &amp; 20 November 2026</div>
+      </div>
+    </div>
+    <div class="envelope-flap">
+      <svg viewBox="0 0 320 120" preserveAspectRatio="none">
+        <path d="M0,0 L160,110 L320,0 L320,0 L0,0 Z" fill="#e8d5a8"/>
+        <path d="M0,0 L160,110 L320,0" fill="none" stroke="#c9a040" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="envelope-seal">V&A</div>
+  </div>
+  <p class="envelope-prompt">Tap to open your invitation</p>
+  <button class="enter-btn" id="enter-site">Enter Celebration</button>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button id="lightbox-close">&#x2715;</button>
+  <button id="lightbox-prev">&#8592;</button>
+  <img id="lightbox-img" src="" alt="">
+  <button id="lightbox-next">&#8594;</button>
+  <div class="lightbox-counter" id="lightbox-counter"></div>
+</div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <span class="brand">V &amp; A</span>
+  <ul>
+    <li><a href="#invitation-section">Invitation</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#venue">Venue</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div id="hero">
+  <img class="hero-invitation" src="images/vishal-ashwini-invitation.png" alt="Wedding invitation for Dr. S. Vishal and Dr. M. Aswini, with the wedding date 20 November 2026">
+  <div class="scroll-hint">Scroll Down</div>
+</div>
+
+<!-- COUNTDOWN -->
+<div id="countdown">
+  <div class="countdown-inner reveal">
+    <p class="cd-label">Time Until the Wedding</p>
+    <h2 class="cd-title">Counting Down</h2>
+    <div class="countdown-grid">
+      <div class="countdown-card"><div class="countdown-num" id="cd-days">--</div><div class="countdown-lbl">Days</div></div>
+      <div class="countdown-card"><div class="countdown-num" id="cd-hours">--</div><div class="countdown-lbl">Hours</div></div>
+      <div class="countdown-card"><div class="countdown-num" id="cd-mins">--</div><div class="countdown-lbl">Minutes</div></div>
+      <div class="countdown-card"><div class="countdown-num" id="cd-secs">--</div><div class="countdown-lbl">Seconds</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- INVITATION CARD (interactive flip) -->
+<div id="invitation-section">
+  <div id="invitation">
+    <div class="reveal" style="text-align:center; margin-bottom: 2rem;">
+      <p class="section-label">You Are Cordially Invited</p>
+      <h2 class="section-title">Wedding Invitation</h2>
+      <div class="ornament-center">— ✦ —</div>
+    </div>
+    <div class="invitation-inner reveal-scale">
+      <div class="invitation-flip-card" id="inv-card">
+        <div class="invitation-front">
+          <div class="invitation-front-motif">🙏</div>
+          <h3>Wedding Invitation</h3>
+          <div class="inv-ornament">— ✦ —</div>
+          <p>Tap to open</p>
+        </div>
+        <div class="invitation-back">
+          <img src="images/vishal-ashwini-invitation-details.png" alt="Wedding invitation for Dr. S. Vishal and Dr. M. Aswini, including family names, reception and wedding timings, and venue">
+        </div>
+      </div>
+    </div>
+    <p class="flip-hint" id="flip-hint">Tap the card to flip</p>
+  </div>
+</div>
+
+<!-- EVENTS -->
+<div class="bg-pattern">
+  <div class="section" id="events">
+    <div class="reveal">
+      <p class="section-label">Schedule of Celebrations</p>
+      <h2 class="section-title">Wedding Events</h2>
+      <div class="ornament-center">— ✦ —</div>
+    </div>
+    <div class="events-grid">
+      <div class="event-card reveal" style="transition-delay:0.1s">
+        <div class="event-icon">💍</div>
+        <div class="event-name">Reception</div>
+        <div class="event-date">Thursday, 19th November 2026</div>
+        <div class="event-time">6:30 PM – 10:00 PM</div>
+      </div>
+      <div class="event-card reveal" style="transition-delay:0.25s">
+        <div class="event-icon">🌟</div>
+        <div class="event-name">Wedding</div>
+        <div class="event-date">Friday, 20th November 2026</div>
+        <div class="event-time">9:00 AM – 10:00 AM</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VENUE -->
+<div class="venue-section" id="venue">
+  <div class="venue-inner">
+    <div class="reveal">
+      <p class="section-label">Where to Find Us</p>
+      <h2 class="section-title">Venue</h2>
+      <div class="ornament-center">— ✦ —</div>
+    </div>
+    <div class="venue-card reveal">
+      <div>
+        <div class="venue-name">C. Thanapal Marriage Hall A/C</div>
+        <div class="venue-address">
+          C.N. Palayam Main Road,<br>
+          Sathipattu, Panruti – 607106
+        </div>
+        <a class="map-btn" href="https://maps.google.com/?q=C.+Thanapal+Marriage+Hall+C.N.+Palayam+Main+Road+Sathipattu+Panruti+607106" target="_blank" rel="noopener noreferrer"><span>View on Google Maps</span></a>
+      </div>
+      <div class="venue-map-box">
+        <iframe
+          src="https://maps.google.com/maps?q=C.%20Thanapal%20Marriage%20Hall%20C.N.%20Palayam%20Main%20Road%20Sathipattu%20Panruti%20607106&t=&z=15&ie=UTF8&iwloc=&output=embed"
+          allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-names reveal">Dr. S. Vishal &amp; Dr. M. Aswini</div>
+  <p class="reveal">19th &amp; 20th November 2026 &nbsp;·&nbsp; C. Thanapal Marriage Hall A/C, Panruti</p>
+  <p class="reveal" style="margin-top:1.5rem; font-size:0.65rem; opacity:0.4;">Made with love · 2026</p>
+</footer>
+
+<!-- BACKGROUND MUSIC -->
+<audio id="bg-music" loop preload="auto">
+  <source src="music/BG.mp3" type="audio/mpeg">
+</audio>
+
+<!-- MUSIC TOGGLE -->
+<button id="music-toggle" title="Toggle Music" aria-label="Toggle background music">
+  <div class="bars">
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  </div>
+</button>
+
+<!-- BACK TO TOP -->
+<button id="back-to-top" title="Back to top" aria-label="Scroll back to top">↑</button>
+
+<script>
+(function() {
+  'use strict';
+
+  // ===== MUSIC ELEMENTS (declared early for autoplay on enter) =====
+  const musicBtn = document.getElementById('music-toggle');
+  const bgMusic = document.getElementById('bg-music');
+
+  // ===== ENVELOPE INTERACTION =====
+  const envelope = document.getElementById('envelope');
+  const intro = document.getElementById('envelope-intro');
+  const enterBtn = document.getElementById('enter-site');
+
+  // Create floating particles for envelope screen
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'intro-particle';
+    const size = Math.random() * 6 + 2;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (Math.random() * 6 + 4) + 's';
+    p.style.animationDelay = (Math.random() * 5) + 's';
+    intro.appendChild(p);
+  }
+
+  envelope.addEventListener('click', function() {
+    if (!this.classList.contains('opened')) {
+      this.classList.add('opened');
+    }
+  });
+
+  enterBtn.addEventListener('click', function() {
+    intro.classList.add('hidden');
+    document.body.style.overflow = '';
+    // Autoplay background music on entry (user gesture satisfies browser policy)
+    bgMusic.play().then(function() {
+      musicBtn.classList.add('playing');
+    }).catch(function() {});
+  });
+
+  // Prevent scrolling while envelope is showing
+  document.body.style.overflow = 'hidden';
+
+  // ===== COUNTDOWN WITH FLIP ANIMATION =====
+  const wedding = new Date('2026-11-20T10:30:00+05:30');
+  const cdEls = {
+    days: document.getElementById('cd-days'),
+    hours: document.getElementById('cd-hours'),
+    mins: document.getElementById('cd-mins'),
+    secs: document.getElementById('cd-secs')
+  };
+  let prevVals = { days: '', hours: '', mins: '', secs: '' };
+
+  function tick() {
+    const diff = wedding - new Date();
+    if (diff <= 0) {
+      Object.values(cdEls).forEach(function(el) { el.textContent = '00'; });
+      return;
+    }
+    const vals = {
+      days: String(Math.floor(diff / 86400000)).padStart(2, '0'),
+      hours: String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0'),
+      mins: String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0'),
+      secs: String(Math.floor((diff % 60000) / 1000)).padStart(2, '0')
+    };
+    Object.keys(vals).forEach(function(key) {
+      if (vals[key] !== prevVals[key]) {
+        cdEls[key].textContent = vals[key];
+        cdEls[key].classList.remove('flip');
+        void cdEls[key].offsetWidth; // reflow
+        cdEls[key].classList.add('flip');
+      }
+    });
+    prevVals = vals;
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // ===== SCROLL REVEAL =====
+  const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+  const revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  revealEls.forEach(function(el) { revealObserver.observe(el); });
+
+  // ===== NAV SCROLL EFFECT =====
+  const nav = document.getElementById('main-nav');
+  window.addEventListener('scroll', function() {
+    nav.classList.toggle('scrolled', window.scrollY > 100);
+    // Back to top button
+    document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 600);
+  });
+
+  // ===== INVITATION FLIP CARD =====
+  const invCard = document.getElementById('inv-card');
+  const flipHint = document.getElementById('flip-hint');
+  invCard.addEventListener('click', function() {
+    this.classList.toggle('flipped');
+    flipHint.textContent = this.classList.contains('flipped') ? 'Tap to flip back' : 'Tap the card to flip';
+  });
+
+  // ===== GALLERY LIGHTBOX =====
+  const imgs = Array.from(document.querySelectorAll('.gallery-item img'));
+  let current = 0;
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lightbox-img');
+  const lbCounter = document.getElementById('lightbox-counter');
+
+  function openLB(i) {
+    current = i;
+    lbImg.src = imgs[i].src;
+    lbCounter.textContent = (i + 1) + ' / ' + imgs.length;
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLB() {
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  imgs.forEach(function(img, i) {
+    img.parentElement.addEventListener('click', function() { openLB(i); });
+  });
+  document.getElementById('lightbox-close').addEventListener('click', closeLB);
+  document.getElementById('lightbox-prev').addEventListener('click', function() {
+    openLB((current - 1 + imgs.length) % imgs.length);
+  });
+  document.getElementById('lightbox-next').addEventListener('click', function() {
+    openLB((current + 1) % imgs.length);
+  });
+  lb.addEventListener('click', function(e) { if (e.target === lb) closeLB(); });
+
+  // Touch swipe for lightbox
+  let touchStartX = 0;
+  lb.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+  lb.addEventListener('touchend', function(e) {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) openLB((current - 1 + imgs.length) % imgs.length);
+      else openLB((current + 1) % imgs.length);
+    }
+  }, { passive: true });
+
+  document.addEventListener('keydown', function(e) {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'ArrowLeft') openLB((current - 1 + imgs.length) % imgs.length);
+    if (e.key === 'ArrowRight') openLB((current + 1) % imgs.length);
+    if (e.key === 'Escape') closeLB();
+  });
+
+  // ===== FLOATING PETALS (Canvas) =====
+  const canvas = document.getElementById('petals-canvas');
+  const ctx = canvas.getContext('2d');
+  let petals = [];
+  const petalColors = [
+    'rgba(212,184,106,0.4)',
+    'rgba(184,151,58,0.3)',
+    'rgba(245,236,215,0.5)',
+    'rgba(74,54,128,0.15)',
+    'rgba(201,169,110,0.35)'
+  ];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  function createPetal() {
+    return {
+      x: Math.random() * canvas.width,
+      y: -10,
+      size: Math.random() * 8 + 3,
+      speedY: Math.random() * 1.2 + 0.4,
+      speedX: Math.random() * 0.8 - 0.4,
+      rotation: Math.random() * 360,
+      rotSpeed: Math.random() * 2 - 1,
+      color: petalColors[Math.floor(Math.random() * petalColors.length)],
+      opacity: Math.random() * 0.5 + 0.3
+    };
+  }
+
+  // Initialize some petals
+  for (let i = 0; i < 15; i++) {
+    const p = createPetal();
+    p.y = Math.random() * canvas.height;
+    petals.push(p);
+  }
+
+  function drawPetal(p) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate((p.rotation * Math.PI) / 180);
+    ctx.globalAlpha = p.opacity;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    // Petal shape
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo(p.size / 2, -p.size, p.size, -p.size / 2, 0, p.size);
+    ctx.bezierCurveTo(-p.size, -p.size / 2, -p.size / 2, -p.size, 0, 0);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function animatePetals() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    petals.forEach(function(p) {
+      p.y += p.speedY;
+      p.x += p.speedX + Math.sin(p.y * 0.01) * 0.3;
+      p.rotation += p.rotSpeed;
+      drawPetal(p);
+    });
+    // Remove off-screen petals and add new ones
+    petals = petals.filter(function(p) { return p.y < canvas.height + 20; });
+    if (petals.length < 20 && Math.random() < 0.05) {
+      petals.push(createPetal());
+    }
+    requestAnimationFrame(animatePetals);
+  }
+  animatePetals();
+
+  // ===== BACK TO TOP =====
+  document.getElementById('back-to-top').addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ===== MUSIC TOGGLE =====
+  musicBtn.addEventListener('click', function() {
+    if (bgMusic.paused) {
+      bgMusic.play();
+      this.classList.add('playing');
+    } else {
+      bgMusic.pause();
+      this.classList.remove('playing');
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
